@@ -15,19 +15,18 @@
                 this.name = name;
                 this.code = code;
                 var aMarkers = [];
-                this.setMarker = function(x,y,i){
-                    var id = 1;
+                this.setMarkers = function(x,y,i){
                     if(!isNaN(x) || !isNaN(y))
                     {
-                    var oMarkers = {x:x, y:y};
-                    aMarkers[id].splice(id, 1, oMarkers);
+                        aMarkers[i] = {x:x, y:y};
+                    }
+                    else {
+                        alert('bitte nur Zahlen eingeben')
+                    }
                 }
-                else {
-                    alert('bitte nur Zahlen eingeben')
-                }
-                }
-                this.getMarkers = function(id){
-                    return aMarkers[id];
+                this.getMarkers = function(i){
+                    var oMarker = {x:aMarkers[i].x, y:aMarkers[i].y}
+                    return oMarker;
                 }
 
             }
@@ -68,11 +67,12 @@
 
                 
                 $('.changeBtn').on('click', function(){
-                   
+                    
+
                     var x = $('#markerx'+i+'').val();
                     var y = $('#markery'+i+'').val();
         
-                    aProject[i].setMarker(x,y,i);
+                    aProject[i].setMarkers(x,y,i);
 
                      console.log(aProject[i].getMarkers(i));
 
