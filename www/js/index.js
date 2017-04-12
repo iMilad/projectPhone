@@ -1,5 +1,8 @@
-// var serverURL = 'http://wifi.1av.at/...';
-var serverURL = '127.0.0.1:8081';
+$( document ).ready( function() {
+  document.addEventListener("deviceready", onDeviceReady, false);
+});
+
+var serverURL = '127.0.0.1:20001/t3/';
 
 // device APIs are available
 function onDeviceReady() {
@@ -16,7 +19,9 @@ function onDeviceReady() {
   		success:function(data) {
         try {
           data = JSON.parse( data );
-        } catch(err) {}
+        } catch(err) {
+          console.log("Error to get");
+        }
 
         var project = data.project;
         for ( var i in project ) {
