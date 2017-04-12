@@ -11,14 +11,25 @@
 
 
 
-            var Project = function(name, markers, code){
+            var Project = function(name, code){
                 this.name = name;
                 this.code = code;
-                this.setMarker = function(x,y){
+                var aMarkers = [];
+                this.setMarker = function(x,y,i){
+                    var id = 1;
+                    if(!isNaN(x) || !isNaN(y))
+                    {
                     var oMarkers = {x:x, y:y};
-                    var aMarkers = [];
-                    aMarkers.push(oMarkers);
+                    aMarkers[id].splice(id, 1, oMarkers);
                 }
+                else {
+                    alert('bitte nur Zahlen eingeben')
+                }
+                }
+                this.getMarkers = function(id){
+                    return aMarkers[id];
+                }
+
             }
 
             var aProject = [];
@@ -57,10 +68,13 @@
 
                 
                 $('.changeBtn').on('click', function(){
-                   // var id = $(this).attr('id').substr(5);
-                    aProject[i].markerx = ;
-                    createList();
-                     console.log(aProject, i);
+                   
+                    var x = $('#markerx'+i+'').val();
+                    var y = $('#markery'+i+'').val();
+        
+                    aProject[i].setMarker(x,y,i);
+
+                     console.log(aProject[i].getMarkers(i));
 
                 });
 
