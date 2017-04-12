@@ -1,0 +1,141 @@
+<!doctype html>
+<html>
+<head>
+	<title>Test</title>
+	<meta charset="utf-8">
+	<script src="../../jquery-3.1.1.min.js"></script>
+	<script>
+
+  $( document ).ready( function()
+  { $("#neues_Projekt").click(function()
+		{ $.ajax(
+	    { url:"http://localhost:20001/t3/project",
+	    	type:"POST",
+	    	data:{name: "Test7"},
+	      success:function(resp)
+	      { console.log(resp);
+	      },
+	      error: function (e)
+	      { console.log(e);
+	      }
+	    });
+		});
+
+		$("#alle_Projekte").click(function()
+		{ $.ajax(
+			{ url:"http://localhost:20001/t3/project",
+				type:"GET",
+				success:function(resp)
+				{ console.log(resp);
+				},
+				error: function (e)
+				{ console.log(e);
+				}
+			});
+		});
+
+		$("#ein_Projekt").click(function()
+		{ $.ajax(
+			{ url:"http://localhost:20001/t3/project/2",
+			  type:"GET",
+				success:function(resp)
+				{ console.log(resp);
+				},
+				error: function (e)
+				{ console.log(e);
+				}
+			});
+		});
+
+		$("#change_Projekt").click(function()
+		{ $.ajax(
+			{ url:"http://localhost:20001/t3/project/2",
+			  data: {name:'Test2'},
+			  type:"PUT",
+				success:function(resp)
+				{ console.log(resp);
+				},
+				error: function (e)
+				{ console.log(e);
+				}
+			});
+		});
+
+		$("#delete_Projekt").click(function()
+		{ $.ajax(
+			{ url:"http://localhost:20001/t3/project/2",
+				data: {name:'Test2'},
+				type:"DELETE",
+				success:function(resp)
+				{ console.log(resp);
+				},
+				error: function (e)
+				{ console.log(e);
+				}
+			});
+		});
+
+		$("#addMarker").click(function()
+		{ $.ajax(
+			{ url:"http://localhost:20001/t3/marker/1",
+				data: {name:"Marker A",lat:12, long: 40},
+				type:"POST",
+				success:function(resp)
+				{ console.log(resp);
+				},
+				error: function (e)
+				{ console.log(e);
+				}
+			});
+		});
+
+		$("#changeMarker").click(function()
+		{ $.ajax(
+			{ url:"http://localhost:20001/t3/marker/1/1",
+				data: {name:"Marker A",lat:12, long: 7},
+				type:"PUT",
+				success:function(resp)
+				{ console.log(resp);
+				},
+				error: function (e)
+				{ console.log(e);
+				}
+			});
+		});
+
+		$("#deleteMarker").click(function()
+		{ $.ajax(
+			{ url:"http://localhost:20001/t3/marker/1/1",
+				type:"DELETE",
+				success:function(resp)
+				{ console.log(resp);
+				},
+				error: function (e)
+				{ console.log(e);
+				}
+			});
+		});
+  });
+
+
+
+	</script>
+	<style>
+	</style>
+</head>
+<body>
+
+  <h1>Test</h1>
+	<button id="neues_Projekt">neues Projekt</button>
+	<button id="alle_Projekte">alle Projekte</button>
+	<button id="ein_Projekt">ein Projekt</button>
+	<button id="change_Projekt">Projekt ändern</button>
+	<button id="delete_Projekt">Projekt löschen</button>
+
+	<button id="addMarker">Add Marker</button>
+	<button id="changeMarker">Change Marker</button>
+	<button id="deleteMarker">Delete Marker</button>
+
+
+</body>
+</html>
