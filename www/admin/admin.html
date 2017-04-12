@@ -1,0 +1,93 @@
+<!doctype html>
+<html>
+<head>
+	<title>Titel</title>
+	<meta charset="utf-8">
+		 <script src="../vendor/jquery-3.2.1.min.js">
+    </script>
+	<script>
+        $(document).ready(function(){
+ 
+
+
+
+            var Project = function(name, markers, code){
+                this.name = name;
+                this.code = code;
+                this.setMarker = function(x,y){
+                    var oMarkers = {x:x, y:y};
+                    var aMarkers = [];
+                    aMarkers.push(oMarkers);
+                }
+            }
+
+            var aProject = [];
+
+            $('#projectBtn').on('click', function(){
+                var oProject = new Project();
+                oProject.name = $('#projectname').val();
+                aProject.push(oProject);
+                 $('<ul id="projectlist">').appendTo($('#listwrapper'));
+
+            var createList = function(){
+                if (aProject.length==0){$('#projectlist').empty();};
+                 for ( let i=0; i < aProject.length; i++){
+                    if (i==0){$('#projectlist').empty();};
+
+                console.log(aProject);
+
+                $('<li>').html(aProject[i].name)
+                .appendTo('#projectlist')
+                .append('<input id="markerx'+i+'">')
+                .append('<label for="markerx'+i+'">Marker X</label>')
+                .append('<input id="markery'+i+'">')
+                .append('<label for="markery'+i+'">Marker Y</label>')
+                .append('<button class="changeBtn">change</button>')
+                .append('<button class="removeBtn">remove</button>')
+                
+                
+
+                $('.removeBtn').on('click', function(){
+                   // var id = $(this).attr('id').substr(5);
+                    aProject.splice(i, 1);
+                    createList();
+                     console.log(aProject, i);
+
+                });
+
+                
+                $('.changeBtn').on('click', function(){
+                   // var id = $(this).attr('id').substr(5);
+                    aProject[i].markerx = ;
+                    createList();
+                     console.log(aProject, i);
+
+                });
+
+                   
+                }
+            }
+                createList();
+            });
+
+            
+
+    });
+
+
+
+	</script>
+	<style>
+	</style>
+</head>
+<body>
+
+    <input type="text" id="projectname">
+
+    <button id="projectBtn">save</button>
+
+    <div id="listwrapper"></div>
+
+</div>
+</body>
+</html>
