@@ -1,49 +1,147 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
-var app = {
-    // Application Constructor
-    initialize: function() {
-        this.bindEvents();
-    },
-    // Bind Event Listeners
-    //
-    // Bind any events that are required on startup. Common events are:
-    // 'load', 'deviceready', 'offline', and 'online'.
-    bindEvents: function() {
-        document.addEventListener('deviceready', this.onDeviceReady, false);                //eventlistener der erst nach initialisierung der app triggert
-    },
-    // deviceready Event Handler
-    //
-    // The scope of 'this' is the event. In order to call the 'receivedEvent'
-    // function, we must explicitly call 'app.receivedEvent(...);'
-    onDeviceReady: function() {
-        app.receivedEvent('deviceready');
-    },
-    // Update DOM on a Received Event
-    receivedEvent: function(id) {
-        var parentElement = document.getElementById(id);
-        var listeningElement = parentElement.querySelector('.listening');
-        var receivedElement = parentElement.querySelector('.received');
+// var serverURL = 'http://wifi.1av.at/...';
+var serverURL = '127.0.0.1:8081';
 
-        listeningElement.setAttribute('style', 'display:none;');
-        receivedElement.setAttribute('style', 'display:block;');
+// device APIs are available
+function onDeviceReady() {
+  console.log( 'Device ready' );
 
-        console.log('Received Event: ' + id);
-    }
+  navigator.geolocation.getCurrentPosition(function(pos){
+    alert( pos.coords.latitude + ' / ' + pos.coords.longitude );
+  });
+
+  // Get all the projects
+  $.ajax({
+  		url:serverURL+'project',
+  		type:'GET',
+  		success:function(data) {
+        try {
+          data = JSON.parse( data );
+        } catch(err) {}
+
+        var project = data.project;
+        for ( var i in project ) {
+          $( '<option value="'+project[i].id+'">' ).html( project[i].name ).appendTo( '.projectList' );
+        }
+  		},
+      error:function(err) {
+        alert( 'ERROR' + err );
+      }
+  	});
+
+    $( '#login' ).on( 'click', function(e) {
+        e.preventDefault();
+        projectList();
+    });
+}
+
+$( document ).on('submit','form',function(e) {
+  e.preventDefault();
+});
+
+var point;
+
+var projectList = function() {
+    $( '#code' ).removeClass( 'err' );
+    $( '.error' ).hide();
+    var code = $('.code').val();
+    var project = $('.projectList').val();
+
+    if ( code !== '' && project !== '' ) {
+
+      $.ajax({
+          url:serverURL+'project/'+project+'/getpoint',
+          data:{"password":code},
+          type:'POST',
+          success:function(data) {
+            try {
+              data = JSON.parse(data);
+            } catch(err) {}
+
+            if (data == 'Unauthorized') {
+              $('#code').addClass('err');
+              $('.error').show();
+              return;
+            }
+
+            if (data.point.length === 0) {
+              alert( 'No points in project' );
+
+            } else {
+              $('#screen2').show();
+              $('#screen1').hide();
+              $( '#projectName' ).html( $('.projectList option:selected').html() );
+              point =  data.point;
+              pointLoad();
+            }
+
+          },
+          error:function(){
+            //When the code is wrong
+            $( '#code' ).addClass( 'err' );
+            $( '.error' ).show();
+          }
+        });
+      } else {
+          alert( 'Choose Project or give the code.' );
+      }
 };
+
+var pointLoad = function() {
+  for ( var i in point ) {
+    $( '<option value="'+i+'">' ).html( 'Latitude: ' +point[i].lat+ ' - ' + 'Longitude: ' + point[i].lng ).appendTo( '.pointList' );
+  }
+};
+
+var selectedPoint;
+
+$( document ).on( 'change', '.pointList', function() {
+
+  // SELECT point...
+  if ( $('.pointList').val() === '' ) { $('#checker').hide(); selectedPoint = false; return; }
+  $('#checker').show();
+  selectedPoint = point[ $('.pointList').val() ];
+  console.log( selectedPoint );
+  checkDistance();
+});
+
+
+var checkDistance = function() {
+  if ( !selectedPoint ) return;
+  navigator.geolocation.getCurrentPosition(onSuccess, onError);
+};
+
+
+$('#back').on ( 'click', function() {
+  document.location.reload();
+});
+
+// Current Position
+var onSuccess = function(position) {
+  var d = distanceInKm(position.coords.latitude,position.coords.longitude,selectedPoint.lat,selectedPoint.lng );
+  d = d*1000;
+
+  if ( d < $('#distance').val()*1  ) {
+    $('.check').css({'background-color':'green'});
+  } else {
+    $('.check').css({'background-color':'red'});
+  }
+
+  setTimeout( checkDistance, 1000*10 );
+};
+
+function onError(error) {
+    alert('code: '    + error.code    + '\n' +
+          'message: ' + error.message + '\n');
+}
+
+
+// Calculate Distance
+function distanceInKm(lat1, lon1, lat2, lon2) {
+  var p = 0.017453292519943295;    // Math.PI / 180
+  var c = Math.cos;
+  var a = 0.5 - c((lat2 - lat1) * p)/2 +
+      c(lat1 * p) * c(lat2 * p) *
+      (1 - c((lon2 - lon1) * p))/2;
+
+  return 12742 * Math.asin(Math.sqrt(a)); // 2 * R; R = 6371 km
+}
