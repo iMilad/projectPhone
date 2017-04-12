@@ -1,3 +1,5 @@
 /hooks
 /platforms
 /plugins
+.DS_Store
+.projectile
